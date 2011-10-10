@@ -12,10 +12,10 @@ import serial
 import time
 
 UPDATE_INTERVAL_SECS = 0.01
-UPDATE_WINDOW = 20
+UPDATE_WINDOW = 8
 
 KEY_CPU = 'CPU'
-SERIAL_DEVICE = '/dev/tty.usbmodemfd131'
+SERIAL_DEVICE = '/dev/tty.usbmodemfa141'
 SERIAL_BAUD_FILE = 'SerialBaud.h'
 SERIAL_BAUD_NAME = 'SERIAL_BAUD'
 TIMEOUT = 0 # non-blocking read
