@@ -1,0 +1,10 @@
+pySerial quick intro w/ Arduino:
+	http://pyserial.sourceforge.net/
+		download, sudo python setup.py install
+	http://www.arduino.cc/playground/Interfacing/Python
+Serial Programming Guide:
+	http://www.easysw.com/~mike/serial/serial.html
+Python access to system stats:
+	http://code.google.com/p/psutil/
+Disabling reset on Serial monitor:
+	http://arduino.cc/playground/Main/DisablingAutoResetOnSerialConnection
