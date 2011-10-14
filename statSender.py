@@ -14,11 +14,31 @@ import time
 UPDATE_INTERVAL_SECS = 0.01
 UPDATE_WINDOW = 8
 
-KEY_CPU = 'CPU'
 SERIAL_DEVICE = '/dev/tty.usbmodemfa141'
 SERIAL_BAUD_FILE = 'SerialBaud.h'
 SERIAL_BAUD_NAME = 'SERIAL_BAUD'
 TIMEOUT = 0 # non-blocking read
+
+KEY_CPU = 'CPU'
+CPU_MARQUEE_INTERVAL_MAX = 300
+
+KEY_NETWORK_UPLOAD = 'NET_UP'
+
+
+cpuValues = None
+def GetCpuValue():
+	global cpuValues
+	if cpuValues is None:
+		cpuValues = [0.0,]*UPDATE_WINDOW
+	cpuValues = cpuValues[1:]
+	cpuValues.append(psutil.cpu_percent())
+
+	cpuAverage = sum(cpuValues)/len(cpuValues)
+	scaleFactor = (1.0 - cpuAverage/100.0)**3
+	return int(scaleFactor*CPU_MARQUEE_INTERVAL_MAX)
+
+def GetNetworkUploadValue():
+	return 1
 
 with open(SERIAL_BAUD_FILE) as baudDefineFile:
 	tokens = ''.join(baudDefineFile.readlines()).split()
@@ -28,25 +48,23 @@ with open(SERIAL_BAUD_FILE) as baudDefineFile:
 if __name__ == '__main__':
 	arduinoSerial = serial.Serial(SERIAL_DEVICE, serialBaud,
 		timeout=TIMEOUT)
-	cpuValues = [0.0,]*UPDATE_WINDOW
 	while True:
-		cpuValues = cpuValues[1:]
-		cpuValues.append(psutil.cpu_percent())
 		stats = {
-			KEY_CPU: sum(cpuValues)/len(cpuValues),
+			KEY_CPU: GetCpuValue(),
+			KEY_NETWORK_UPLOAD: GetNetworkUploadValue(),
 		}
 		statsStr = '\n'.join(
 			['%s\t%s' % (label, value) for label, value
 				in stats.iteritems()]) + '\n'
 		arduinoSerial.write(statsStr)
-		print 'Sent ', statsStr,
 
 		lines = ''
 		line = arduinoSerial.readline()
 		while line:
 			lines += line
 			line = arduinoSerial.readline()
-		print lines
+		if lines:
+			print lines
 		time.sleep(UPDATE_INTERVAL_SECS)
 	arduinoSerial.close()
 
