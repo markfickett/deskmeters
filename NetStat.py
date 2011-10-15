@@ -19,9 +19,19 @@ tcp:
 __all__ = [
 	'GetSentBytes',
 	'GetReceivedBytes',
+
+	'BYTES_PER_KB',
+	'BYTES_PER_MB',
+	'BYTES_PER_GB',
+
+	'Format',
 ]
 
 import subprocess, re
+
+BYTES_PER_KB = 1024
+BYTES_PER_MB = 1024*BYTES_PER_KB
+BYTES_PER_GB = 1024*BYTES_PER_MB
 
 _RE_BYTES_SENT = re.compile(r'^tcp:.*?packets sent.*?\((\d+) bytes\)$',
 	re.DOTALL|re.MULTILINE)
@@ -50,5 +60,37 @@ def GetSentBytes():
 
 def GetReceivedBytes():
 	return _GetNetstatValue(_RE_BYTES_RECEIVED)
+
+
+_UNITS = (
+	(BYTES_PER_GB, 'GB'),
+	(BYTES_PER_MB, 'MB'),
+	(BYTES_PER_KB, 'KB'),
+	(1, 'B'),
+)
+def Format(byteCount, suffix=''):
+	if byteCount < 1:
+		return str(byteCount)
+	for unitCount, name in _UNITS:
+		if byteCount >= unitCount:
+			converted = float(byteCount) / unitCount
+			return '%.2f %s%s' % (converted, name, suffix)
+
+
+if __name__ == '__main__':
+	import time
+
+	dT = 0.25
+	lastBytesPair = (GetSentBytes(), GetReceivedBytes())
+	while True:
+		currentBytesPair = (GetSentBytes(), GetReceivedBytes())
+		dBytesPair = [currentBytes - lastBytes
+			for currentBytes, lastBytes
+			in zip(currentBytesPair, lastBytesPair)]
+		bpsPair = [Format(dBytes/dT, 'ps') for dBytes in dBytesPair]
+		print ('Up: %10s\tDown: %10s' % tuple(bpsPair))
+		lastBytesPair = currentBytesPair
+
+		time.sleep(dT)
 
 
