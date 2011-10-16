@@ -4,11 +4,13 @@
  */
 
 #include <ledcontroller.h>
+#include <newanddelete.h>
 #include "DataReceiver.h"
 
 #include <stdlib.h>
 
 using LedController::Color;
+using LedController::PatternList;
 using LedController::RandomMarquee;
 using LedController::MovingPeak;
 using LedController::LedStrip;
@@ -17,20 +19,23 @@ using LedController::LedStrip;
 #define PIN_CKI 3		// Green wire
 #define PIN_STATUS_LED 13	// On board LED
 
-RandomMarquee marquee = RandomMarquee();
-MovingPeak peak = MovingPeak(Color(0x6666FF));
+PatternList patternList = PatternList();
+RandomMarquee* marquee;
 LedStrip ledStrip = LedStrip();
 DataReceiver dataReceiver = DataReceiver();
 
 int interval;
 
 void cpuChanged(const char* value) {
-	marquee.setInterval(atoi(value));
+	//marquee->setInterval(atoi(value));
 }
 
 void networkDownloadChanged(const char* value) {
-	peak.setIntensity(atof(value));
-	peak.restart();
+	MovingPeak* peak = new MovingPeak(Color(0x6666FF));
+	peak->setIntensity(atof(value));
+	patternList.append(peak);
+	Serial.print("+");
+	Serial.flush();
 }
 
 void setup() {
@@ -41,10 +46,10 @@ void setup() {
 	randomSeed(analogRead(0));
 
 	ledStrip.clear();
-	marquee.update();
-	marquee.apply(ledStrip.getColors());
-	peak.update();
-	peak.apply(ledStrip.getColors());
+	//marquee = new RandomMarquee();
+	//patternList.append(marquee);
+	patternList.update();
+	patternList.apply(ledStrip.getColors());
 	ledStrip.send(PIN_SDI, PIN_CKI);
 
 	dataReceiver.setup();
@@ -57,10 +62,9 @@ void setup() {
 void loop() {
 	dataReceiver.readAndUpdate();
 
-	if (marquee.update() || peak.update()) {
+	if (patternList.update()) {
 		ledStrip.clear();
-		marquee.apply(ledStrip.getColors());
-		peak.apply(ledStrip.getColors());
+		patternList.apply(ledStrip.getColors());
 		ledStrip.send(PIN_SDI, PIN_CKI);
 	}
 }
