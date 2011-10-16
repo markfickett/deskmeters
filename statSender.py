@@ -7,7 +7,7 @@ This depends on:
 	pySerial: http://pyserial.sourceforge.net/
 """
 
-import psutil
+import psutil, NetStat
 import serial
 import time
 
@@ -22,7 +22,7 @@ TIMEOUT = 0 # non-blocking read
 KEY_CPU = 'CPU'
 CPU_MARQUEE_INTERVAL_MAX = 300
 
-KEY_NETWORK_UPLOAD = 'NET_UP'
+KEY_NETWORK_DOWNLOAD = 'NET_DOWN'
 
 
 cpuValues = None
@@ -37,8 +37,23 @@ def GetCpuValue():
 	scaleFactor = (1.0 - cpuAverage/100.0)**3
 	return int(scaleFactor*CPU_MARQUEE_INTERVAL_MAX)
 
-def GetNetworkUploadValue():
-	return 1
+previousBytes = NetStat.GetReceivedBytes()
+def GetNetworkDownloadValue():
+	"""
+	Calculate the number of MB downloaded since last report.
+	Return an intensity in [0, 1.0] that is greater for more MB.
+	"""
+	global previousBytes
+	currentBytes = NetStat.GetReceivedBytes()
+	dBytes = currentBytes - previousBytes
+	kb = dBytes / NetStat.BYTES_PER_KB 
+	if kb > 0:
+		previousBytes += kb*NetStat.BYTES_PER_KB
+		intensity = 1.0 - 0.8**kb
+		return intensity
+	else:
+		return None
+
 
 with open(SERIAL_BAUD_FILE) as baudDefineFile:
 	tokens = ''.join(baudDefineFile.readlines()).split()
@@ -51,8 +66,11 @@ if __name__ == '__main__':
 	while True:
 		stats = {
 			KEY_CPU: GetCpuValue(),
-			KEY_NETWORK_UPLOAD: GetNetworkUploadValue(),
 		}
+		networkDownValue = GetNetworkDownloadValue()
+		if networkDownValue is not None:
+			stats[KEY_NETWORK_DOWNLOAD] = networkDownValue
+
 		statsStr = '\n'.join(
 			['%s\t%s' % (label, value) for label, value
 				in stats.iteritems()]) + '\n'
