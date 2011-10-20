@@ -27,11 +27,16 @@ DataReceiver dataReceiver = DataReceiver();
 int interval;
 
 void cpuChanged(const char* value) {
-	//marquee->setInterval(atoi(value));
+	marquee->setInterval(atoi(value));
 }
 
 void networkDownloadChanged(const char* value) {
 	MovingPeak* peak = new MovingPeak(Color(0x6666FF));
+	if (peak == NULL) {
+		Serial.print("!");
+		Serial.flush();
+		return;
+	}
 	peak->setIntensity(atof(value));
 	patternList.append(peak);
 	Serial.print("+");
@@ -46,8 +51,8 @@ void setup() {
 	randomSeed(analogRead(0));
 
 	ledStrip.clear();
-	//marquee = new RandomMarquee();
-	//patternList.append(marquee);
+	marquee = new RandomMarquee();
+	patternList.append(marquee);
 	patternList.update();
 	patternList.apply(ledStrip.getColors());
 	ledStrip.send(PIN_SDI, PIN_CKI);
