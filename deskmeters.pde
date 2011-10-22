@@ -33,7 +33,7 @@ void cpuChanged(const char* value) {
 void networkDownloadChanged(const char* value) {
 	MovingPeak* peak = new MovingPeak(Color(0x6666FF));
 	if (peak == NULL) {
-		Serial.print("!");
+		Serial.print("!p");
 		Serial.flush();
 		return;
 	}
