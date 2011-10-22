@@ -24,6 +24,9 @@ CPU_MARQUEE_INTERVAL_MAX = 300
 
 KEY_NETWORK_DOWNLOAD = 'NET_DOWN'
 
+# Send a spot every NET_DOWN_CHUNK bytes.
+NET_DOWN_CHUNK = NetStat.BYTES_PER_MB / 2
+
 
 cpuValues = None
 def GetCpuValue():
@@ -40,16 +43,18 @@ def GetCpuValue():
 previousBytes = NetStat.GetReceivedBytes()
 def GetNetworkDownloadValue():
 	"""
-	Calculate the number of MB downloaded since last report.
-	Return an intensity in [0, 1.0] that is greater for more MB.
+	Calculate a number based on the number of bytes downloaded since last
+	report. Return an intensity in [0, 1.0] that is greater for more data.
+	Chunk reports (so a consistent low bandwidth download will produce
+	occasional pulses, not dim skitter).
 	"""
 	global previousBytes
 	currentBytes = NetStat.GetReceivedBytes()
 	dBytes = currentBytes - previousBytes
-	kb = dBytes / NetStat.BYTES_PER_KB 
-	if kb > 0:
-		previousBytes += kb*NetStat.BYTES_PER_KB
-		intensity = 1.0 - 0.8**kb
+	numChunks = dBytes / NET_DOWN_CHUNK
+	if numChunks > 0:
+		previousBytes += numChunks*NET_DOWN_CHUNK
+		intensity = 1.0 - 0.5**numChunks
 		return intensity
 	else:
 		return None
