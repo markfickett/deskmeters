@@ -52,7 +52,7 @@ void networkDownloadChanged(const char* value) {
 }
 
 void networkUploadChanged(const char* value) {
-	addPeak(Color(0xFF6666), atof(value), true);
+	addPeak(Color(0xFF2222), atof(value), true);
 }
 
 void setup() {
