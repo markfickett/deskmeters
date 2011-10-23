@@ -27,7 +27,7 @@ __all__ = [
 	'Format',
 ]
 
-import subprocess, re
+from Manifest import subprocess, re
 
 BYTES_PER_KB = 1024
 BYTES_PER_MB = 1024*BYTES_PER_KB
