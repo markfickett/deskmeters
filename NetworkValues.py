@@ -11,8 +11,7 @@ from Manifest import NetStat
 
 # Send a spot every NET_DOWN_CHUNK bytes.
 NET_DOWN_CHUNK = NetStat.BYTES_PER_KB * 100
-
-NET_UP_CHUNK = NET_DOWN_CHUNK
+NET_UP_CHUNK = NetStat.BYTES_PER_KB * 10
 
 def _GetValue(prevBytes, getBytesFn, chunkSize):
 	"""
