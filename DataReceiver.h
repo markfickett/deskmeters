@@ -2,7 +2,7 @@
 
 #include "SerialBaud.h"
 
-#define MAX_KEYS		2
+#define MAX_KEYS		3
 #define STR_SIZE		20
 #define READ_BUFFER_SIZE	255
 
