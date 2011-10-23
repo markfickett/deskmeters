@@ -30,17 +30,29 @@ void cpuChanged(const char* value) {
 	marquee->setInterval(atoi(value));
 }
 
-void networkDownloadChanged(const char* value) {
-	MovingPeak* peak = new MovingPeak(Color(0x6666FF));
+void addPeak(const Color& color, float intensity, bool reverse) {
+	MovingPeak* peak = new MovingPeak(color);
 	if (peak == NULL) {
 		Serial.print("!p");
 		Serial.flush();
 		return;
 	}
-	peak->setIntensity(atof(value));
+	peak->setIntensity(intensity);
+	if (reverse) {
+		peak->setPosition(STRIP_LENGTH-1);
+		peak->setIncrement(-1);
+	}
 	patternList.insert(peak);
 	Serial.print("+");
 	Serial.flush();
+}
+
+void networkDownloadChanged(const char* value) {
+	addPeak(Color(0x6666FF), atof(value), false);
+}
+
+void networkUploadChanged(const char* value) {
+	addPeak(Color(0xFF6666), atof(value), true);
 }
 
 void setup() {
@@ -60,6 +72,7 @@ void setup() {
 	dataReceiver.setup();
 	dataReceiver.addKey("CPU", &cpuChanged);
 	dataReceiver.addKey("NET_DOWN", &networkDownloadChanged);
+	dataReceiver.addKey("NET_UP", &networkUploadChanged);
 
 	delay(2000);
 }
