@@ -38,7 +38,7 @@ void networkDownloadChanged(const char* value) {
 		return;
 	}
 	peak->setIntensity(atof(value));
-	patternList.append(peak);
+	patternList.insert(peak);
 	Serial.print("+");
 	Serial.flush();
 }
@@ -52,7 +52,7 @@ void setup() {
 
 	ledStrip.clear();
 	marquee = new RandomMarquee();
-	patternList.append(marquee);
+	patternList.insert(marquee);
 	patternList.update();
 	patternList.apply(ledStrip.getColors());
 	ledStrip.send(PIN_SDI, PIN_CKI);
