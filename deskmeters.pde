@@ -30,7 +30,7 @@ void cpuChanged(const char* value) {
 	marquee->setInterval(atoi(value));
 }
 
-void addPeak(const Color& color, float intensity, bool reverse) {
+void addPeak(const LedController::Color& color, float intensity, bool reverse) {
 	MovingPeak* peak = new MovingPeak(color);
 	if (peak == NULL) {
 		Serial.print("!p");
