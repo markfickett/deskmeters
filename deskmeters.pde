@@ -24,8 +24,6 @@ RandomMarquee* marquee;
 LedStrip ledStrip = LedStrip();
 DataReceiver dataReceiver = DataReceiver();
 
-int interval;
-
 void cpuChanged(const char* value) {
 	marquee->setInterval(atoi(value));
 }
