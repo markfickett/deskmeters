@@ -15,9 +15,9 @@ using LedController::RandomMarquee;
 using LedController::MovingPeak;
 using LedController::LedStrip;
 
-#define PIN_SDI 2		// Red data wire (not the red 5V wire!)
-#define PIN_CKI 3		// Green wire
-#define PIN_STATUS_LED 13	// On board LED
+#define PIN_LED_DATA	2	// red data wire, SDI (not the red 5V wire!)
+#define PIN_LED_CLOCK	3	// green wire, CKI
+#define PIN_STATUS_LED	13	// on board LED
 
 PatternList patternList = PatternList();
 RandomMarquee* marquee;
@@ -54,8 +54,8 @@ void networkUploadChanged(const char* value) {
 }
 
 void setup() {
-	pinMode(PIN_SDI, OUTPUT);
-	pinMode(PIN_CKI, OUTPUT);
+	pinMode(PIN_LED_DATA, OUTPUT);
+	pinMode(PIN_LED_CLOCK, OUTPUT);
 	pinMode(PIN_STATUS_LED, OUTPUT);
 
 	randomSeed(analogRead(0));
@@ -65,14 +65,12 @@ void setup() {
 	patternList.insert(marquee);
 	patternList.update();
 	patternList.apply(ledStrip.getColors());
-	ledStrip.send(PIN_SDI, PIN_CKI);
+	ledStrip.send(PIN_LED_DATA, PIN_LED_CLOCK);
 
 	dataReceiver.setup();
 	dataReceiver.addKey("CPU", &cpuChanged);
 	dataReceiver.addKey("NET_DOWN", &networkDownloadChanged);
 	dataReceiver.addKey("NET_UP", &networkUploadChanged);
-
-	delay(2000);
 }
 
 void loop() {
