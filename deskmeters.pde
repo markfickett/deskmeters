@@ -21,7 +21,7 @@ using LedController::LedStrip;
 
 PatternList patternList = PatternList();
 RandomMarquee* marquee;
-LedStrip ledStrip = LedStrip();
+LedStrip ledStrip = LedStrip(PIN_LED_DATA, PIN_LED_CLOCK);
 DataReceiver dataReceiver = DataReceiver();
 
 void cpuChanged(const char* value) {
@@ -54,8 +54,7 @@ void networkUploadChanged(const char* value) {
 }
 
 void setup() {
-	pinMode(PIN_LED_DATA, OUTPUT);
-	pinMode(PIN_LED_CLOCK, OUTPUT);
+	ledStrip.setup();
 	pinMode(PIN_STATUS_LED, OUTPUT);
 
 	randomSeed(analogRead(0));
@@ -65,7 +64,7 @@ void setup() {
 	patternList.insert(marquee);
 	patternList.update();
 	patternList.apply(ledStrip.getColors());
-	ledStrip.send(PIN_LED_DATA, PIN_LED_CLOCK);
+	ledStrip.send();
 
 	dataReceiver.setup();
 	dataReceiver.addKey("CPU", &cpuChanged);
@@ -79,7 +78,7 @@ void loop() {
 	if (patternList.update()) {
 		ledStrip.clear();
 		patternList.apply(ledStrip.getColors());
-		ledStrip.send(PIN_SDI, PIN_CKI);
+		ledStrip.send();
 	}
 }
 
