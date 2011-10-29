@@ -31,7 +31,7 @@ if __name__ == '__main__':
 				if value is not None:
 					stats[keyName] = value
 
-			arduinoSerial.write(DataSender.Format(stats))
+			arduinoSerial.write(DataSender.Format(**stats))
 
 			lines = ''
 			line = arduinoSerial.readline()
