@@ -7,7 +7,7 @@ result in error messages with download links.)
 """
 
 from Manifest import DataSender
-from Manifest import time
+from Manifest import time, sys
 from Manifest import CpuValue, NetworkValues
 
 UPDATE_INTERVAL_SECS = 0.01
@@ -33,13 +33,11 @@ if __name__ == '__main__':
 
 			arduinoSerial.write(DataSender.Format(**stats))
 
-			lines = ''
 			line = arduinoSerial.readline()
 			while line:
-				lines += line
+				sys.stdout.write(line)
+				sys.stdout.flush()
 				line = arduinoSerial.readline()
-			if lines:
-				print lines
 
 			time.sleep(UPDATE_INTERVAL_SECS)
 
