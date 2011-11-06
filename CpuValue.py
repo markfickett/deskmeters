@@ -29,4 +29,8 @@ def GetCpuValue():
 	scaleFactor = (1.0 - cpuAverage/100.0)**3
 	return int(scaleFactor*CPU_MARQUEE_INTERVAL_MAX)
 
+def GetCpuValues():
+	"""Return per-CPU values, unsmoothed."""
+	return psutil.cpu_percent(percpu=True)
+
 
