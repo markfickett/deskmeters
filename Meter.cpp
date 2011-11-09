@@ -5,11 +5,11 @@
 #define ARDUINO_VOLTAGE		5.0
 #define ANALOG_MAX		255.0
 
-Meter::Meter(int outputPin, float maxCurrent, float seriesResistance,
+Meter::Meter(int outputPin, float maxCurrentAmps, float seriesResistance,
 	float internalResistance) :
 	pin(outputPin),
-	analogFullScale(maxCurrent /
-			(ARDUINO_VOLTAGE/seriesResistance + internalResistance))
+	analogFullScale(maxCurrentAmps /
+		(ARDUINO_VOLTAGE/(seriesResistance + internalResistance)))
 {
 }
 

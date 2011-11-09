@@ -5,13 +5,13 @@
 class Meter {
 	private:
 		/**
-		 * An analogWrite of analogMax*255*value wil set the meter
+		 * An analogWrite of analogFullScale*255*value wil set the meter
 		 * to value fraction of its full range.
 		 */
-		const float analogMax;
+		const float analogFullScale;
 		const int pin;
 	public:
-		Meter(int pin, float maxCurrent,
+		Meter(int pin, float maxCurrentAmps,
 			float seriesResistance, float internalResistance);
 		void setup();
 		void setValue(float value);
