@@ -4,6 +4,7 @@ Get CPU stats from the system and provide a value to drive analog display.
 
 __all__ = [
 	'GetCpuValue',
+	'GetCpuValues',
 ]
 
 from Manifest import psutil
