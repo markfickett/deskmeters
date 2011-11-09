@@ -30,8 +30,10 @@ if __name__ == '__main__':
 				value = getValueFn()
 				if value is not None:
 					stats[keyName] = value
-			for i, cpuValue in enumerate(CpuValues.GetCpuValues()):
-				stats['CPU' + i] = cpuValue
+			for i, cpuValue in enumerate(CpuValue.GetCpuValues()):
+				v = cpuValue/100.0
+				stats['CPU%d' % i] = v
+				break
 
 			arduinoSerial.write(DataSender.Format(**stats))
 
