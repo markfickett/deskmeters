@@ -9,6 +9,8 @@
 
 #include <stdlib.h>
 
+#include "Meter.h"
+
 using LedController::Color;
 using LedController::PatternList;
 using LedController::RandomMarquee;
@@ -18,11 +20,17 @@ using LedController::LedStrip;
 #define PIN_LED_DATA	2	// red data wire, SDI (not the red 5V wire!)
 #define PIN_LED_CLOCK	3	// green wire, CKI
 #define PIN_STATUS_LED	13	// on board LED
+#define PIN_METER	10
 
 PatternList patternList = PatternList();
 RandomMarquee* marquee;
 LedStrip ledStrip = LedStrip(PIN_LED_DATA, PIN_LED_CLOCK);
 DataReceiver dataReceiver = DataReceiver();
+Meter meter = Meter(PIN_METER, 1.16E-3, 4.3E3, 5.0);
+
+void cpu0Changed(const char* value) {
+	meter.setValue(atof(value));
+}
 
 void cpuChanged(const char* value) {
 	marquee->setInterval(atoi(value));
@@ -70,6 +78,9 @@ void setup() {
 	dataReceiver.addKey("CPU", &cpuChanged);
 	dataReceiver.addKey("NET_DOWN", &networkDownloadChanged);
 	dataReceiver.addKey("NET_UP", &networkUploadChanged);
+	dataReceiver.addKey("CPU0", &cpu0Changed);
+
+	meter.setup();
 }
 
 void loop() {
