@@ -2,7 +2,7 @@
 Centralize all the imports for deskmeters' Python (PC) side.
 """
 
-import time, subprocess, re
+import time, subprocess, re, threading
 import os, sys
 
 try:
@@ -20,5 +20,6 @@ sys.path.append(
 )
 import DataSender
 
-import NetStat, CpuValue, NetworkValues
+from AutoFetcher import AutoFetcher, LockGuard
+import NetStat, CpuFetcher, NetworkValues
 

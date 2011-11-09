@@ -8,7 +8,7 @@ result in error messages with download links.)
 
 from Manifest import DataSender
 from Manifest import time, sys
-from Manifest import CpuValue, NetworkValues
+from Manifest import CpuFetcher, NetworkValues
 
 UPDATE_INTERVAL_SECS = 0.01
 
@@ -16,7 +16,6 @@ SERIAL_DEVICE = '/dev/tty.usbmodemfa141'
 
 
 STAT_SOURCES = {
-	'CPU':		CpuValue.GetCpuValue,
 	'NET_DOWN':	NetworkValues.GetDownloadValue,
 	'NET_UP':	NetworkValues.GetUploadValue,
 }
@@ -24,15 +23,19 @@ STAT_SOURCES = {
 
 if __name__ == '__main__':
 	with DataSender.SerialGuard(SERIAL_DEVICE) as arduinoSerial:
+		cpuFetcher = CpuFetcher.CpuFetcher(UPDATE_INTERVAL_SECS)
 		while True:
 			stats = {}
 			for keyName, getValueFn in STAT_SOURCES.iteritems():
 				value = getValueFn()
 				if value is not None:
 					stats[keyName] = value
-			for i, cpuValue in enumerate(CpuValue.GetCpuValues()):
-				v = cpuValue/100.0
-				stats['CPU%d' % i] = v
+
+			# TODO: auto-send, don't poll, since fetcher updates
+			stats['CPU'] = CpuFetcher.DecimalToInterval(
+				cpuFetcher.getAverage())
+			for i, cpuValue in enumerate(cpuFetcher.getValues()):
+				stats['CPU%d' % i] = cpuValue
 				break
 
 			arduinoSerial.write(DataSender.Format(**stats))
