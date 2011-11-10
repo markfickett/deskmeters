@@ -24,12 +24,13 @@ class CpuFetcher(AutoFetcher):
 	def _update(self):
 		perCpu = psutil.cpu_percent(percpu=True)
 		sumOfAverages = 0.0
-		for k, v in enumerate(perCpu):
-			values = self.__values[k][1:]
-			values.append(v/100.0)
-			self.__values[k] = values
-			sumOfAverages += sum(values)
-		self.__ave = sumOfAverages/len(self.__values)
+		with self._lockGuard():
+			for k, v in enumerate(perCpu):
+				values = self.__values[k][1:]
+				values.append(v/100.0)
+				self.__values[k] = values
+				sumOfAverages += sum(values)
+			self.__ave = sumOfAverages/len(self.__values)
 
 	def getSingle(self, i):
 		with self._lockGuard():

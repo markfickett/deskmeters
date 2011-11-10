@@ -27,8 +27,7 @@ class AutoFetcher:
 	def __updateForever(self):
 		while True:
 			time.sleep(self.__interval)
-			with self._lockGuard():
-				self._update()
+			self._update()
 
 	def _update(self):
 		raise NotImplementedError()
