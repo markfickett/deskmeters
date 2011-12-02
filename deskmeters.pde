@@ -20,20 +20,31 @@ using LedController::LedStrip;
 #define PIN_LED_DATA	2	// red data wire, SDI (not the red 5V wire!)
 #define PIN_LED_CLOCK	3	// green wire, CKI
 #define PIN_STATUS_LED	13	// on board LED
-#define PIN_METER	10
 
 PatternList patternList = PatternList();
-RandomMarquee* marquee;
-LedStrip ledStrip = LedStrip(PIN_LED_DATA, PIN_LED_CLOCK);
+//RandomMarquee* marquee;
+//LedStrip ledStrip = LedStrip(PIN_LED_DATA, PIN_LED_CLOCK);
 DataReceiver dataReceiver = DataReceiver();
-Meter meter = Meter(PIN_METER, 1.16E-3, 4.3E3, 5.0);
 
-void cpu0Changed(const char* value) {
-	meter.setValue(atof(value));
-}
+/* meter			pin	full scale A	resistance */
+Meter meterCpu1 = Meter(	5,	5.0/177.0,	154);
+Meter meterCpu2 = Meter(	4,	5.0/255.0,	224);
+Meter meterCpu3 = Meter(	3,	5.0/237.0,	224);
+Meter meterCpu4 = Meter(	2,	5.0/237.0,	224);
+Meter meterNetUp = Meter(	8,	5.0/531.0,	478);
+Meter meterNetDn = Meter(	7,	5.0/265.0,	223);
+Meter meterRam = Meter(		6,	5.0/333.0,	279);
+
+void cpu1Changed(const char* value) { meterCpu1.setValue(atof(value)); }
+void cpu2Changed(const char* value) { meterCpu2.setValue(atof(value)); }
+void cpu3Changed(const char* value) { meterCpu3.setValue(atof(value)); }
+void cpu4Changed(const char* value) { meterCpu4.setValue(atof(value)); }
+void netUpChanged(const char* value) { meterNetUp.setValue(atof(value)); }
+void netDnChanged(const char* value) { meterNetDn.setValue(atof(value)); }
+void ramChanged(const char* value) { meterRam.setValue(atof(value)); }
 
 void cpuChanged(const char* value) {
-	marquee->setInterval(atoi(value));
+	//marquee->setInterval(atoi(value));
 }
 
 void addPeak(const LedController::Color& color, float intensity, bool reverse) {
@@ -53,43 +64,47 @@ void addPeak(const LedController::Color& color, float intensity, bool reverse) {
 	Serial.flush();
 }
 
-void networkDownloadChanged(const char* value) {
-	addPeak(Color(0x6666FF), atof(value), false);
-}
-
-void networkUploadChanged(const char* value) {
-	addPeak(Color(0xFF2222), atof(value), true);
-}
-
 void setup() {
-	ledStrip.setup();
+	//ledStrip.setup();
 	pinMode(PIN_STATUS_LED, OUTPUT);
 
 	randomSeed(analogRead(0));
 
-	ledStrip.clear();
-	marquee = new RandomMarquee();
-	patternList.insert(marquee);
-	patternList.update();
-	patternList.apply(ledStrip.getColors());
-	ledStrip.send();
+	//ledStrip.clear();
+	//marquee = new RandomMarquee();
+	//patternList.insert(marquee);
+	//patternList.update();
+	//patternList.apply(ledStrip.getColors());
+	//ledStrip.send();
 
 	dataReceiver.setup();
-	dataReceiver.addKey("CPU", &cpuChanged);
-	dataReceiver.addKey("NET_DOWN", &networkDownloadChanged);
-	dataReceiver.addKey("NET_UP", &networkUploadChanged);
-	dataReceiver.addKey("CPU0", &cpu0Changed);
+	dataReceiver.addKey("CPU",		&cpuChanged);
+	dataReceiver.addKey("CPU1",		&cpu1Changed);
+	dataReceiver.addKey("CPU2",		&cpu2Changed);
+	dataReceiver.addKey("CPU3",		&cpu3Changed);
+	dataReceiver.addKey("CPU4",		&cpu4Changed);
+	dataReceiver.addKey("NET_UP",		&netUpChanged);
+	dataReceiver.addKey("NET_DOWN",		&netDnChanged);
+	dataReceiver.addKey("RAM",		&ramChanged);
 
-	meter.setup();
+	meterCpu1.setup();
+	meterCpu2.setup();
+	meterCpu3.setup();
+	meterCpu4.setup();
+	meterNetUp.setup();
+	meterNetDn.setup();
+	meterRam.setup();
 }
 
 void loop() {
 	dataReceiver.readAndUpdate();
 
+	/*
 	if (patternList.update()) {
 		ledStrip.clear();
 		patternList.apply(ledStrip.getColors());
 		ledStrip.send();
 	}
+	*/
 }
 
