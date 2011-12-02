@@ -24,6 +24,7 @@ STAT_SOURCES = {
 
 if __name__ == '__main__':
 	with DataSender.SerialGuard(SERIAL_DEVICE) as arduinoSerial:
+		time.sleep(2.0) # TODO send a 'ready' instead
 		cpuFetcher = CpuFetcher.CpuFetcher(UPDATE_INTERVAL_SECS)
 		while True:
 			stats = {}
@@ -37,7 +38,6 @@ if __name__ == '__main__':
 				cpuFetcher.getAverage())
 			for i, cpuValue in enumerate(cpuFetcher.getValues()):
 				stats['CPU%d' % (i+1)] = cpuValue
-				break
 
 			arduinoSerial.write(DataSender.Format(**stats))
 
