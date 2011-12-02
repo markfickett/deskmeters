@@ -12,7 +12,7 @@ class Meter {
 		const int pin;
 	public:
 		Meter(int pin, float maxCurrentAmps,
-			float seriesResistance, float internalResistance);
+			float seriesResistance, float internalResistance=0.0);
 		void setup();
 		void setValue(float value);
 };
