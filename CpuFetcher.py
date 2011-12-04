@@ -9,9 +9,13 @@ __all__ = [
 
 from Manifest import AutoFetcher, psutil
 
-class CpuFetcher(AutoFetcher):
-	def __init__(self, interval, smoothingWindow=8):
-		AutoFetcher.__init__(self, interval)
+class CpuFetcher(AutoFetcher.AutoFetcher):
+	"""
+	Automatically track and update a rolling window of CPU usage numbers.
+	Provide an overall average and per-core values, as [0.0, 1.0] values.
+	"""
+	def __init__(self, interval, smoothingWindow=8, **kwargs):
+		AutoFetcher.AutoFetcher.__init__(self, interval, **kwargs)
 		self.__window = smoothingWindow
 
 		self.__ave = 0.0
@@ -22,36 +26,51 @@ class CpuFetcher(AutoFetcher):
 			self.__values[key] = list(empty)
 
 	def _update(self):
+		# per-core list of [0, 100] values
 		perCpu = psutil.cpu_percent(percpu=True)
 		sumOfAverages = 0.0
 		with self._lockGuard():
-			for k, v in enumerate(perCpu):
-				values = self.__values[k][1:]
-				values.append(v/100.0)
-				self.__values[k] = values
-				sumOfAverages += sum(values)
+			for i, decPercent in enumerate(perCpu):
+				# Add the new value, drop the oldest.
+				values = self.__values[i][1:]
+				values.append(decPercent/100.0)
+				self.__values[i] = values
+				sumOfAverages += sum(values)/self.__window
 			self.__ave = sumOfAverages/len(self.__values)
+		self._callChangeCallback()
 
 	def getSingle(self, i):
+		"""
+		@return the [0.0, 1.0] usage value for the specified CPU,
+			smoothed over the fetcher's window
+		"""
 		with self._lockGuard():
 			return sum(self.__values[i])/self.__window
 
 	def getAverage(self):
+		"""
+		@return the [0.0, 1.0] average usage value for all CPUs,
+			smoothed over the fetcher's window
+		"""
 		with self._lockGuard():
 			return self.__ave
 
 	def getValues(self):
+		"""
+		@return a list, in order, of the [0.0, 1.0] usage values for
+			all the CPUs, each smoothed over the fetcher's window
+		"""
 		with self._lockGuard():
 			for singleCpuValues in self.__values.values():
 				yield sum(singleCpuValues)/self.__window
 
 
-CPU_MARQUEE_INTERVAL_MAX = 300
+INTERVAL_MAX = 300
+INTERVAL_MIN = 20
 
-def DecimalToInterval(cpuValue):
+def FractionToInterval(cpuValue):
 	"""
 	Get the update interval (1/speed) for the lights representing CPU usage.
 	"""
-	scaleFactor = (1.0 - cpuValue/100.0)**3
-	return int(scaleFactor*CPU_MARQUEE_INTERVAL_MAX)
+	return int(-(INTERVAL_MAX-INTERVAL_MIN)*cpuValue**2 + INTERVAL_MAX)
 
