@@ -2,15 +2,11 @@
 
 #include "WProgram.h"
 
-// Arduino voltage on PWM pins: expected 5.0, measured slightly less
-#define ARDUINO_VOLTAGE		4.87
 #define ANALOG_MAX		255.0
 
-Meter::Meter(int outputPin, float maxCurrentAmps, float seriesResistance,
-	float internalResistance) :
+Meter::Meter(int outputPin, float analogFullScale) :
 	pin(outputPin),
-	analogFullScale(maxCurrentAmps /
-		(ARDUINO_VOLTAGE/(seriesResistance + internalResistance)))
+	analogFullScale(constrain(analogFullScale, 0.0, 1.0))
 {
 }
 

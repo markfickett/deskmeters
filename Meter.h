@@ -11,8 +11,7 @@ class Meter {
 		const float analogFullScale;
 		const int pin;
 	public:
-		Meter(int pin, float maxCurrentAmps,
-			float seriesResistance, float internalResistance=0.0);
+		Meter(int pin, float analogFullScale);
 		void setup();
 		void setValue(float value);
 };
