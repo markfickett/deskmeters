@@ -20,6 +20,6 @@ sys.path.append(
 )
 import DataSender
 
-from AutoFetcher import AutoFetcher, LockGuard
-import NetStat, CpuFetcher, NetworkValues, RamValues
+import AutoFetcher
+import NetStat, CpuFetcher, NetworkFetcher, RamFetcher
 
