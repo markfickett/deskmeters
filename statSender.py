@@ -8,44 +8,75 @@ result in error messages with download links.)
 
 from Manifest import DataSender
 from Manifest import time, sys
-from Manifest import CpuFetcher, NetworkValues, RamValues
+from Manifest import CpuFetcher, NetworkFetcher, RamFetcher
+from Manifest import threading, AutoFetcher
 
-UPDATE_INTERVAL_SECS = 0.1
+UPDATE_INTERVAL_SECS =		1.0
+UPDATE_INTERVAL_SECS_CPU =	0.1
+UPDATE_INTERVAL_SECS_RAM =	0.5
+UPDATE_INTERVAL_SECS_NET =	1.0
 
 SERIAL_DEVICE = '/dev/tty.usbmodemfa141'
 
 
-STAT_SOURCES = {
-	'NET_DOWN':	NetworkValues.GetDownloadValue,
-	'NET_UP':	NetworkValues.GetUploadValue,
-	'RAM':		RamValues.GetRamUsedFraction,
-}
+class ThreadSafeSender:
+	"""
+	Provide a thread-safe method to send data to the Arduino.
+	"""
+	def __init__(self, arduinoSerial):
+		self.__arduinoSerial = arduinoSerial
+		self.__lock = threading.Lock()
+
+	def send(self, **kwargs):
+		with AutoFetcher.LockGuard(self.__lock):
+			for k, v in kwargs.iteritems():
+				if 'NET' in k:
+					print k, v
+			self.__arduinoSerial.write(DataSender.Format(**kwargs))
 
 
 if __name__ == '__main__':
 	with DataSender.SerialGuard(SERIAL_DEVICE) as arduinoSerial:
-		time.sleep(2.0) # TODO send a 'ready' instead
-		cpuFetcher = CpuFetcher.CpuFetcher(UPDATE_INTERVAL_SECS)
-		while True:
-			stats = {}
-			for keyName, getValueFn in STAT_SOURCES.iteritems():
-				value = getValueFn()
-				if value is not None:
-					stats[keyName] = value
+		DataSender.WaitForReady(arduinoSerial)
 
-			# TODO: auto-send, don't poll, since fetcher updates
-			stats['CPU'] = CpuFetcher.DecimalToInterval(
-				cpuFetcher.getAverage())
-			for i, cpuValue in enumerate(cpuFetcher.getValues()):
+		sender = ThreadSafeSender(arduinoSerial)
+
+		def cpuChangedCallback(fetcher):
+			ave = fetcher.getAverage()
+			stats = {
+				'CPU': ave,
+				'CPU_INT': CpuFetcher.FractionToInterval(ave),
+			}
+			for i, cpuValue in enumerate(fetcher.getValues()):
 				stats['CPU%d' % (i+1)] = cpuValue
+			sender.send(**stats)
 
-			arduinoSerial.write(DataSender.Format(**stats))
+		def ramChangedCallback(fetcher):
+			sender.send(RAM=fetcher.getFraction())
 
-			line = arduinoSerial.readline()
-			while line:
-				sys.stdout.write(line)
-				sys.stdout.flush()
+		def netChangedCallback(fetcher):
+			netUp, netDown = fetcher.getValues()
+			sender.send(NET_UP=netUp, NET_DOWN=netDown)
+
+		fetchers = (
+			CpuFetcher.CpuFetcher(UPDATE_INTERVAL_SECS_CPU,
+				changeCallback=cpuChangedCallback),
+			RamFetcher.RamFetcher(UPDATE_INTERVAL_SECS_RAM,
+				changeCallback=ramChangedCallback),
+			NetworkFetcher.NetworkFetcher(UPDATE_INTERVAL_SECS_NET,
+				changeCallback=netChangedCallback),
+		)
+
+		while any(map(lambda fetcher: fetcher.isAlive(), fetchers)):
+			try:
 				line = arduinoSerial.readline()
+				while line:
+					sys.stdout.write(line)
+					sys.stdout.flush()
+					line = arduinoSerial.readline()
 
-			time.sleep(UPDATE_INTERVAL_SECS)
+				time.sleep(UPDATE_INTERVAL_SECS)
+			except KeyboardInterrupt, e:
+				print 'Killed, exiting.'
+				break
 
