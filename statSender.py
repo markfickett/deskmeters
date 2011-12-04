@@ -29,9 +29,6 @@ class ThreadSafeSender:
 
 	def send(self, **kwargs):
 		with AutoFetcher.LockGuard(self.__lock):
-			for k, v in kwargs.iteritems():
-				if 'NET' in k:
-					print k, v
 			self.__arduinoSerial.write(DataSender.Format(**kwargs))
 
 
