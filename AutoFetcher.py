@@ -14,12 +14,13 @@ class LockGuard:
 		self.__lock.release()
 
 class AutoFetcher:
-	def __init__(self, interval):
+	def __init__(self, interval, changeCallback=None):
 		self.__thread = threading.Thread(target=self.__updateForever)
 		self.__interval = max(0, float(interval))
 		self.__thread.daemon = True
 		self.__thread.start()
 		self.__lock = threading.Lock()
+		self.__changeCallback = changeCallback
 
 	def _lockGuard(self):
 		return LockGuard(self.__lock)
@@ -31,6 +32,15 @@ class AutoFetcher:
 
 	def _update(self):
 		raise NotImplementedError()
+
+	def _callChangeCallback(self):
+		if self.__changeCallback:
+			try:
+				self.__changeCallback(self)
+			except Exception, e:
+				print ('Error calling %s: %s'
+					% (self.__changeCallback, e))
+				self.__changeCallback = None
 
 	def isAlive(self):
 		return self.__thread.isAlive()
