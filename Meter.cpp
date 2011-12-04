@@ -2,7 +2,8 @@
 
 #include "WProgram.h"
 
-#define ARDUINO_VOLTAGE		5.0
+// Arduino voltage on PWM pins: expected 5.0, measured slightly less
+#define ARDUINO_VOLTAGE		4.87
 #define ANALOG_MAX		255.0
 
 Meter::Meter(int outputPin, float maxCurrentAmps, float seriesResistance,
