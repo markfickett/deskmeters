@@ -2,7 +2,7 @@
 Wrap netstat, to get total (and incremental) upload/download data counts.
 
 The netstat expected behavior is something like:
-$ $ netstat -s -p tcp
+$ netstat -s -p tcp
 tcp:
 	3803202 packets sent
 		2997416 data packets (2644623460 bytes) # this taken for 'sent'
