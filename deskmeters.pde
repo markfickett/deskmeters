@@ -24,7 +24,7 @@ using LedController::LedStrip;
 PatternList patternList = PatternList();
 RandomMarquee* marquee;
 LedStrip ledStrip = LedStrip(PIN_LED_DATA, PIN_LED_CLOCK);
-DataReceiver dataReceiver = DataReceiver();
+DataReceiver<9> dataReceiver;
 
 /* meter			pin	max analog value, fraction of 1.0 */
 Meter meterCpu1 = Meter(	5,	1.0);
