@@ -10,7 +10,7 @@ Panel meters for two CPU cores. Photo [courtesy of Matthew Fickett on flickr](ht
 Desktop Computer (Python)
 -------------------------
 
-In Python, the controller fetches various stats (in part using [psutil](from http://code.google.com/p/psutil/) ). It then uses the Python side of [DataReceiver](https://github.com/markfickett/DataReceiver) to pack the stats as strings and send them to the Arduino.
+In Python, the controller fetches various stats (in part using [psutil](http://code.google.com/p/psutil/)). It then uses the Python side of [DataReceiver](https://github.com/markfickett/DataReceiver) to pack the stats as strings and send them to the Arduino.
 
 Arduino
 -------
