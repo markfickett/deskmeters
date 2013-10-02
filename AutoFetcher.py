@@ -1,17 +1,9 @@
 __all__ = [
-	'LockGuard',
 	'AutoFetcher',
 ]
 
 from Manifest import threading, time
 
-class LockGuard:
-	def __init__(self, lock):
-		self.__lock = lock
-	def __enter__(self):
-		self.__lock.acquire()
-	def __exit__(self, excClass, excObj, tb):
-		self.__lock.release()
 
 class AutoFetcher:
 	def __init__(self, interval, changeCallback=None):
@@ -23,7 +15,7 @@ class AutoFetcher:
 		self.__changeCallback = changeCallback
 
 	def _lockGuard(self):
-		return LockGuard(self.__lock)
+		return self.__lock
 
 	def __updateForever(self):
 		while True:
