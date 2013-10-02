@@ -36,16 +36,32 @@ Meter meterNetUp = Meter(	7,	0.94);
 Meter meterNetDn = Meter(	6,	1.0);
 Meter meterCpu = Meter(		9,	1.0);
 
-void cpuChanged(const char* value) { meterCpu.setValue(atof(value)); }
-void cpu1Changed(const char* value) { meterCpu1.setValue(atof(value)); }
-void cpu2Changed(const char* value) { meterCpu2.setValue(atof(value)); }
-void cpu3Changed(const char* value) { meterCpu3.setValue(atof(value)); }
-void cpu4Changed(const char* value) { meterCpu4.setValue(atof(value)); }
-void netUpChanged(const char* value) { meterNetUp.setValue(atof(value)); }
-void netDnChanged(const char* value) { meterNetDn.setValue(atof(value)); }
-void ramChanged(const char* value) { meterRam.setValue(atof(value)); }
+void cpuChanged(size_t unusedSize, const char* value) {
+	meterCpu.setValue(atof(value));
+}
+void cpu1Changed(size_t unusedSize, const char* value) {
+	meterCpu1.setValue(atof(value));
+}
+void cpu2Changed(size_t unusedSize, const char* value) {
+	meterCpu2.setValue(atof(value));
+}
+void cpu3Changed(size_t unusedSize, const char* value) {
+	meterCpu3.setValue(atof(value));
+}
+void cpu4Changed(size_t unusedSize, const char* value) {
+	meterCpu4.setValue(atof(value));
+}
+void netUpChanged(size_t unusedSize, const char* value) {
+	meterNetUp.setValue(atof(value));
+}
+void netDnChanged(size_t unusedSize, const char* value) {
+	meterNetDn.setValue(atof(value));
+}
+void ramChanged(size_t unusedSize, const char* value) {
+	meterRam.setValue(atof(value));
+}
 
-void cpuIntervalChanged(const char* value) {
+void cpuIntervalChanged(size_t unusedSize, const char* value) {
 	marquee->setInterval(atoi(value));
 }
 
