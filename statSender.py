@@ -28,7 +28,7 @@ class ThreadSafeSender:
 		self.__lock = threading.Lock()
 
 	def send(self, **kwargs):
-		with AutoFetcher.LockGuard(self.__lock):
+		with self.__lock:
 			self.__arduinoSerial.write(DataSender.Format(**kwargs))
 
 
@@ -41,7 +41,6 @@ if __name__ == '__main__':
 		def cpuChangedCallback(fetcher):
 			ave = fetcher.getAverage()
 			stats = {
-				'CPU': ave,
 				'CPU_INT': CpuFetcher.FractionToInterval(ave),
 			}
 			for i, cpuValue in enumerate(fetcher.getValues()):
