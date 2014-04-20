@@ -34,10 +34,10 @@ Meter meterCpu4 = Meter(	2,	1.0);
 Meter meterRam = Meter(		8,	1.0);
 Meter meterNetUp = Meter(	7,	0.94);
 Meter meterNetDn = Meter(	6,	1.0);
-Meter meterCpu = Meter(		9,	1.0);
+Meter meterMinecraft = Meter(	9,	1.0);
 
-void cpuChanged(size_t unusedSize, const char* value) {
-	meterCpu.setValue(atof(value));
+void minecraftChanged(size_t unusedSize, const char* value) {
+	meterMinecraft.setValue(atof(value));
 }
 void cpu1Changed(size_t unusedSize, const char* value) {
 	meterCpu1.setValue(atof(value));
@@ -83,7 +83,7 @@ void setup() {
 
 	dataReceiver.setup();
 	dataReceiver.addKey("CPU_INT",		&cpuIntervalChanged);
-	dataReceiver.addKey("CPU",		&cpuChanged);
+	dataReceiver.addKey("MINECRAFT",	&minecraftChanged);
 	dataReceiver.addKey("CPU1",		&cpu1Changed);
 	dataReceiver.addKey("CPU2",		&cpu2Changed);
 	dataReceiver.addKey("CPU3",		&cpu3Changed);
