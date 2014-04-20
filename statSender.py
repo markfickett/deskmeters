@@ -9,12 +9,17 @@ result in error messages with download links.)
 from Manifest import DataSender
 from Manifest import time, sys
 from Manifest import cpu_fetcher, network_fetcher, ram_fetcher
+from Manifest import minecraft_fetcher
 from Manifest import threading, auto_fetcher
 
 UPDATE_INTERVAL_SECS =		1.0
 UPDATE_INTERVAL_SECS_CPU =	0.1
 UPDATE_INTERVAL_SECS_RAM =	0.5
 UPDATE_INTERVAL_SECS_NET =	1.0
+UPDATE_INTERVAL_SECS_MC =	5.0
+
+MINECRAFT_HOST = # 'my.minecraft.server.com'
+MINECRAFT_MAX_DISPLAYABLE_PLAYERS = 10.0
 
 SERIAL_DEVICE = '/dev/tty.usbmodemfa141'
 
@@ -54,6 +59,11 @@ if __name__ == '__main__':
 			netUp, netDown = fetcher.getValues()
 			sender.send(NET_UP=netUp, NET_DOWN=netDown)
 
+		def minecraftChangedCallback(fetcher):
+			displayNum = (fetcher.getNumPlayersOnline() /
+				MINECRAFT_MAX_DISPLAYABLE_PLAYERS)
+			sender.send(MINECRAFT=displayNum)
+
 		fetchers = (
 			cpu_fetcher.CpuFetcher(UPDATE_INTERVAL_SECS_CPU,
 				changeCallback=cpuChangedCallback),
@@ -61,6 +71,10 @@ if __name__ == '__main__':
 				changeCallback=ramChangedCallback),
 			network_fetcher.NetworkFetcher(UPDATE_INTERVAL_SECS_NET,
 				changeCallback=netChangedCallback),
+			minecraft_fetcher.MinecraftFetcher(
+				UPDATE_INTERVAL_SECS_MC,
+				minecraftChangedCallback,
+				MINECRAFT_HOST)
 		)
 
 		while any(map(lambda fetcher: fetcher.isAlive(), fetchers)):

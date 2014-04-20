@@ -20,6 +20,9 @@ sys.path.append(
 )
 import DataSender
 
+sys.path.append(os.path.abspath(os.path.join(os.getcwd(), 'mcstatus',)))
+import mcstatus
+
 import auto_fetcher
-import net_stat, cpu_fetcher, network_fetcher, ram_fetcher
+import net_stat, cpu_fetcher, network_fetcher, ram_fetcher, minecraft_fetcher
 
