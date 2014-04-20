@@ -34,7 +34,7 @@ Meter meterCpu4 = Meter(	2,	1.0);
 Meter meterRam = Meter(		8,	1.0);
 Meter meterNetUp = Meter(	7,	0.94);
 Meter meterNetDn = Meter(	6,	1.0);
-Meter meterMinecraft = Meter(	9,	1.0);
+Meter meterMinecraft = Meter(	9,	0.87);
 
 void minecraftChanged(size_t unusedSize, const char* value) {
 	meterMinecraft.setValue(atof(value));
@@ -92,7 +92,6 @@ void setup() {
 	dataReceiver.addKey("NET_DOWN",		&netDnChanged);
 	dataReceiver.addKey("RAM",		&ramChanged);
 
-	meterCpu.setup();
 	meterCpu1.setup();
 	meterCpu2.setup();
 	meterCpu3.setup();
@@ -100,6 +99,7 @@ void setup() {
 	meterNetUp.setup();
 	meterNetDn.setup();
 	meterRam.setup();
+	meterMinecraft.setup();
 
 	dataReceiver.sendReady();
 }
