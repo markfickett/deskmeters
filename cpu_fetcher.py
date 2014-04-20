@@ -7,15 +7,15 @@ __all__ = [
 	'DecimalToInterval',
 ]
 
-from Manifest import AutoFetcher, psutil
+from Manifest import auto_fetcher, psutil
 
-class CpuFetcher(AutoFetcher.AutoFetcher):
+class CpuFetcher(auto_fetcher.AutoFetcher):
 	"""
 	Automatically track and update a rolling window of CPU usage numbers.
 	Provide an overall average and per-core values, as [0.0, 1.0] values.
 	"""
 	def __init__(self, interval, smoothingWindow=8, **kwargs):
-		AutoFetcher.AutoFetcher.__init__(self, interval, **kwargs)
+		auto_fetcher.AutoFetcher.__init__(self, interval, **kwargs)
 		self.__window = smoothingWindow
 
 		self.__ave = 0.0

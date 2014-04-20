@@ -6,11 +6,11 @@ __all__ = [
 	'NetworkFetcher',
 ]
 
-from Manifest import NetStat, AutoFetcher
+from Manifest import NetStat, auto_fetcher
 
-class NetworkFetcher(AutoFetcher.AutoFetcher):
+class NetworkFetcher(auto_fetcher.AutoFetcher):
 	def __init__(self, interval, smoothingWindow=10, **kwargs):
-		AutoFetcher.AutoFetcher.__init__(self, interval, **kwargs)
+		auto_fetcher.AutoFetcher.__init__(self, interval, **kwargs)
 		self.__upBytes = NetStat.GetSentBytes()
 		self.__dnBytes = NetStat.GetReceivedBytes()
 		self.__window = smoothingWindow

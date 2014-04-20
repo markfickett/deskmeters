@@ -8,8 +8,8 @@ result in error messages with download links.)
 
 from Manifest import DataSender
 from Manifest import time, sys
-from Manifest import CpuFetcher, NetworkFetcher, RamFetcher
-from Manifest import threading, AutoFetcher
+from Manifest import cpu_fetcher, network_fetcher, ram_fetcher
+from Manifest import threading, auto_fetcher
 
 UPDATE_INTERVAL_SECS =		1.0
 UPDATE_INTERVAL_SECS_CPU =	0.1
@@ -41,7 +41,7 @@ if __name__ == '__main__':
 		def cpuChangedCallback(fetcher):
 			ave = fetcher.getAverage()
 			stats = {
-				'CPU_INT': CpuFetcher.FractionToInterval(ave),
+				'CPU_INT': cpu_fetcher.FractionToInterval(ave),
 			}
 			for i, cpuValue in enumerate(fetcher.getValues()):
 				stats['CPU%d' % (i+1)] = cpuValue
@@ -55,11 +55,11 @@ if __name__ == '__main__':
 			sender.send(NET_UP=netUp, NET_DOWN=netDown)
 
 		fetchers = (
-			CpuFetcher.CpuFetcher(UPDATE_INTERVAL_SECS_CPU,
+			cpu_fetcher.CpuFetcher(UPDATE_INTERVAL_SECS_CPU,
 				changeCallback=cpuChangedCallback),
-			RamFetcher.RamFetcher(UPDATE_INTERVAL_SECS_RAM,
+			ram_fetcher.RamFetcher(UPDATE_INTERVAL_SECS_RAM,
 				changeCallback=ramChangedCallback),
-			NetworkFetcher.NetworkFetcher(UPDATE_INTERVAL_SECS_NET,
+			network_fetcher.NetworkFetcher(UPDATE_INTERVAL_SECS_NET,
 				changeCallback=netChangedCallback),
 		)
 

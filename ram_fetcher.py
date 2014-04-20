@@ -1,6 +1,6 @@
-from Manifest import psutil, AutoFetcher
+from Manifest import psutil, auto_fetcher
 
-class RamFetcher(AutoFetcher.AutoFetcher):
+class RamFetcher(auto_fetcher.AutoFetcher):
 	"""
 	Get the decimal fraction in [0.0, 1.0] of used physical memory.
 	"""
