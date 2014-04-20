@@ -1,0 +1,3 @@
+[submodule "mcstatus"]
+	path = mcstatus
+	url = https://github.com/markfickett/minecraftstatus.git
