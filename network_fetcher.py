@@ -6,13 +6,13 @@ __all__ = [
 	'NetworkFetcher',
 ]
 
-from Manifest import NetStat, auto_fetcher
+from Manifest import net_stat, auto_fetcher
 
 class NetworkFetcher(auto_fetcher.AutoFetcher):
 	def __init__(self, interval, smoothingWindow=10, **kwargs):
 		auto_fetcher.AutoFetcher.__init__(self, interval, **kwargs)
-		self.__upBytes = NetStat.GetSentBytes()
-		self.__dnBytes = NetStat.GetReceivedBytes()
+		self.__upBytes = net_stat.GetSentBytes()
+		self.__dnBytes = net_stat.GetReceivedBytes()
 		self.__window = smoothingWindow
 		self.__upBytesRates = [0,]*self.__window
 		self.__dnBytesRates = list(self.__upBytesRates)
@@ -20,9 +20,9 @@ class NetworkFetcher(auto_fetcher.AutoFetcher):
 
 	def _update(self):
 		self.__upBytes = self.__updateByteRate(self.__upBytesRates,
-			self.__upBytes, NetStat.GetSentBytes())
+			self.__upBytes, net_stat.GetSentBytes())
 		self.__dnBytes = self.__updateByteRate(self.__dnBytesRates,
-			self.__dnBytes, NetStat.GetReceivedBytes())
+			self.__dnBytes, net_stat.GetReceivedBytes())
 		self._callChangeCallback()
 
 	def __updateByteRate(self, ratesList, prevBytes, currentBytes):
