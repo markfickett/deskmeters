@@ -12,6 +12,10 @@ from Manifest import cpu_fetcher, network_fetcher, ram_fetcher
 from Manifest import minecraft_fetcher
 from Manifest import threading, auto_fetcher
 
+from Manifest import ledcontroller
+from ledcontroller.Manifest import SendingBuffer, SendingPatternList, sequences
+from ledcontroller.patterns.Manifest import InterpolatedMarquee
+
 UPDATE_INTERVAL_SECS = 1.0
 UPDATE_INTERVAL_SECS_CPU = 0.1
 UPDATE_INTERVAL_SECS_RAM = 0.5
@@ -43,14 +47,18 @@ if __name__ == '__main__':
 
     sender = ThreadSafeSender(arduino_serial)
 
+    color_sender = SendingPatternList(sending_buffer=SendingBuffer(sender))
+    marquee = InterpolatedMarquee(sequences.GenerateHueGradient())
+    color_sender.Append(marquee)
+
     def CpuChangedCallback(fetcher):
       ave = fetcher.GetAverage()
-      stats = {
-        'CPU_INT': cpu_fetcher.FractionToInterval(ave),
-      }
+      marquee.SetSpeed(ave * 10)
+      per_cpu_stats = {}
       for i, cpu_value in enumerate(fetcher.GetValues()):
-        stats['CPU%d' % (i+1)] = cpu_value
-      sender.Send(**stats)
+        per_cpu_stats['CPU%d' % (i+1)] = cpu_value
+      sender.Send(**per_cpu_stats)
+      color_sender.UpdateAndSend()
 
     def RamChangedCallback(fetcher):
       sender.Send(RAM=fetcher.GetFraction())

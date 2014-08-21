@@ -10,13 +10,19 @@ except ImportError, e:
   raise e
 
 # This expects to live in the Arduino sketchbook / library structure,
-# where DataReceiver is a library.
+# where DataReceiver and ledcontroller are libraries.
 sys.path.append(
   os.path.abspath(os.path.join(os.getcwd(),
     '..', 'libraries/DataReceiver')
   )
 )
 import data_sender
+sys.path.append(
+  os.path.abspath(os.path.join(os.getcwd(),
+    '..', 'libraries/ledcontroller/python')
+  )
+)
+import ledcontroller
 
 sys.path.append(os.path.abspath(os.path.join(os.getcwd(), 'mcstatus',)))
 import mcstatus
